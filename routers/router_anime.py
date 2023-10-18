@@ -4,7 +4,8 @@ from classes.models import Anime, AnimeNoID
 from classes.database import animes
 
 router = APIRouter(
-    prefix='/animes'
+    prefix='/library/animes',
+    tags=['Anime Library']
 )
 
 
