@@ -1,14 +1,21 @@
 from pydantic import BaseModel
-from uuid import UUID
 
 class Anime(BaseModel):
-    uid : UUID
+    uid : str
     title : str
     fr_title : str
     genres : list[str]
     episodes : int
     oavs: int
     #user_reviews : str | None = None
+
+#an Anime Object without id to use as data_type in routers
+class AnimeNoID(BaseModel):
+    title : str
+    fr_title : str
+    genres : list[str]
+    episodes : int
+    oavs: int
 
 #TODO :
 #<> add User model
