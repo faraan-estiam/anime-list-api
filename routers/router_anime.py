@@ -1,3 +1,4 @@
+from typing import List, Optional #compatibility fix for render
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException
 from classes.models import Anime, AnimeNoID
@@ -10,7 +11,7 @@ router = APIRouter(
 
 
 #get all animes
-@router.get('/', response_model=list[Anime])
+@router.get('/', response_model=List[Anime])
 async def get_animes():
     return animes
 
@@ -23,8 +24,8 @@ async def post_anime(body_anime: AnimeNoID):
     return newAnime
 
 #search an anime
-@router.get('/search',response_model=list[Anime])
-async def search_animes(title:str | None=None, genres:str | None=None):
+@router.get('/search',response_model=List[Anime])
+async def search_animes(title: Optional[str]=None, genres: Optional[str]=None):
     search_by_title = False
     search_by_genre = False
     if title:

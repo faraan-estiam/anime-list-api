@@ -1,10 +1,11 @@
+from typing import List #compatibility for Render
 from pydantic import BaseModel
 
 class Anime(BaseModel):
     uid : str
     title : str
     fr_title : str
-    genres : list[str]
+    genres : List[str]
     episodes : int
     oavs: int
     #user_reviews : str | None = None
@@ -13,7 +14,7 @@ class Anime(BaseModel):
 class AnimeNoID(BaseModel):
     title : str
     fr_title : str
-    genres : list[str]
+    genres : List[str]
     episodes : int
     oavs: int
 
