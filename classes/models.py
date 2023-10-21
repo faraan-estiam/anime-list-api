@@ -18,6 +18,9 @@ class AnimeNoID(BaseModel):
     episodes : int
     oavs: int
 
+class User(BaseModel):
+    email: str
+    password: str
 #TODO :
 #<> add User model
     #<> watchlist ?
