@@ -12,7 +12,8 @@ import routers.router_auth
 api = FastAPI(
     title='anime-list-api',
     description=api_description,
-    openapi_tags=tags_metadata 
+    openapi_tags=tags_metadata,
+    docs_url='/'
 )
 
 api.include_router(routers.router_anime.router)
