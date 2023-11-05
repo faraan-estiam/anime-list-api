@@ -21,10 +21,11 @@ async def get_watchlist(user_data: int = Depends(get_current_user)):
 async def add_watched_anime(anime: WatchedAnime, user_data: int = Depends(get_current_user)):
     #check if anime already inside watchlist
     if (anime.anime_uid in [item['anime_uid'] for item in await get_watchlist(user_data)]):
-        return Response(content={'message':'anime already in watchlist'}, status_code=409)
+        raise HTTPException(status_code=409, detail='anime already found in watchlist')
     
     await get_anime_by_id(anime.anime_uid) #checks if anime exists before adding it to watchlist
     db.child('users').child(user_data['uid']).child('watchlist').child(anime.anime_uid).set(anime.model_dump())
+    return {'message':'anime added to watchlist'}
 
 @router.get('/{anime_uid}')
 async def get_watched_anime_by_anime_uid(anime_uid: str, user_data: int = Depends(get_current_user)):
