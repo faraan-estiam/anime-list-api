@@ -4,7 +4,6 @@ from firebase_admin import auth
 from classes.models import User
 from database.firebase import firebase_auth
 
-
 router = APIRouter(
     prefix='/auth',
     tags=['Auth']
@@ -18,7 +17,6 @@ def get_current_user(provided_token: str = Depends(oauth2_scheme)):
 
 @router.post('/signup', status_code=201)
 async def create_account(user: User) :
-    #TODO : add user information to DB
     try:
         newUser = auth.create_user(**user.model_dump())
         return {'message': 'User created with id: '+newUser.uid}
