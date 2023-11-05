@@ -7,5 +7,9 @@ tags_metadata = [
     {
         "name": "Auth",
         "description": "Authenticate a User"
+    },
+    {
+        'name': 'Watchlist',
+        'description': 'Create and retreive personal watching lists for users'
     }
 ]

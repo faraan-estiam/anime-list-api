@@ -7,6 +7,7 @@ from documentation.tags import tags_metadata
 #importing routes
 import routers.router_anime
 import routers.router_auth
+import routers.router_watchlist
 
 
 api = FastAPI(
@@ -18,3 +19,4 @@ api = FastAPI(
 
 api.include_router(routers.router_anime.router)
 api.include_router(routers.router_auth.router)
+api.include_router(routers.router_watchlist.router)
