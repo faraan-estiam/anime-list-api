@@ -36,5 +36,5 @@ async def create_swagger_token(user_credentials: OAuth2PasswordRequestForm = Dep
         raise HTTPException(status_code=401, detail='Invalid credentials')
     
 @router.get('/me')
-def secure_endpoint(user_data: int = Depends(get_current_user)):
+def secure_endpoint(user_data: dict = Depends(get_current_user)):
     return user_data
