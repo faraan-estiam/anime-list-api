@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Header, Request, HTTPException
-from dotenv import dotenv_values, 
+from dotenv import dotenv_values 
 from fastapi.responses import RedirectResponse
 import stripe, json
 from database.firebase import db
