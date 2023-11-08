@@ -19,7 +19,7 @@ stripe.api_key=stripe_config['secret_key']
 @router.get('/subscribe')
 async def get_checkout(user_data: dict = Depends(get_current_user)):
     query_result=db.child('users').child(user_data['uid']).child('stripe').get().val()
-    if not query_result : raise HTTPException(status_code=400, detail='user already subscribed')
+    if query_result : raise HTTPException(status_code=400, detail='user already subscribed')
     
     checkout_session = stripe.checkout.Session.create(
         success_url = YOUR_DOMAIN+'/success.html',
@@ -41,6 +41,7 @@ async def get_checkout(user_data: dict = Depends(get_current_user)):
 async def unsubscribe_user(user_data: dict = Depends(get_current_user)):
     query_result=db.child('users').child(user_data['uid']).child('stripe').get().val()
     if not query_result : raise HTTPException(status_code=400, detail='user not subscribed')
+    
     db.child('users').child(user_data['uid']).child('stripe').remove()
     stripe.Subscription.delete(query_result['subscription_id'])
 
