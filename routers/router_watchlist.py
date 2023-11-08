@@ -38,9 +38,19 @@ async def get_watched_anime_by_anime_uid(anime_uid: str, user_data: dict = Depen
     if not query_result : raise HTTPException(status_code=404, detail='anime not found in watchlist')
     return query_result
 
+@router.patch('/{anime_uid}')
+async def update_watchlist(anime_uid:str, user_data: dict = Depends(get_current_user),last_episode: Optional[str]=None, last_season: Optional[str]=None,last_oav: Optional[str]=None,status: Optional[str]=None):
+        targeted_anime = await get_watched_anime_by_anime_uid(anime_uid, user_data)
+        if last_episode : targeted_anime["last_episode"] = last_episode
+        if last_season : targeted_anime["last_season"] = last_season
+        if last_oav : targeted_anime["last_oav"] = last_oav
+        if status : targeted_anime["status"] = status
+        db.child('users').child(user_data['uid']).child('watchlist').child(anime_uid).set(targeted_anime,token=user_data['idToken'])
+        return {'message':'anime updated in watchlist'}
+
 @router.delete('/{anime_uid}')
 async def remove_entry(anime_uid: str, user_data: dict = Depends(get_current_user)):
     #check if anime exists before attempting to delete
     await get_watched_anime_by_anime_uid(anime_uid, user_data)
     db.child('users').child(user_data['uid']).child('watchlist').child(anime_uid).remove(token=user_data['idToken'])
-    return {'message':'anime removed from watchlist'}
+    return {"message":"anime removed from watchlist"}
