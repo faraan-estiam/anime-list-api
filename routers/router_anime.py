@@ -42,18 +42,20 @@ async def search_animes(title: Optional[str]=None, genres: Optional[str]=None):
     search_result = []
     animes = await get_animes()
 
-    for anime in animes:
-        if(search_by_title):
-            if title in anime['title'].lower():
+    if(search_by_title and search_by_genre):
+        for anime in animes:
+            if title in anime['title'].lower() or title in anime['fr_title'].lower():
+                if any(item in anime['genres'] for item in genres):
+                    search_result.append(anime)
+    elif(search_by_title):
+        for anime in animes:
+            if title in anime['title'].lower() or title in anime['fr_title'].lower():
                 search_result.append(anime)
-                continue
-            if title in anime['fr_title'].lower():
-                search_result.append(anime)
-                continue
-
-        if(search_by_genre):
+    elif(search_by_genre):
+        for anime in animes:
             if any(item in anime['genres'] for item in genres):
                 search_result.append(anime)
+
     return search_result
 
 #get specific anime by uid
