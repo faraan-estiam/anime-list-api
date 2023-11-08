@@ -15,7 +15,7 @@ router = APIRouter(
 
 stripe.api_key=stripe_config['secret_key']
 stripe.WebhookEndpoint.create(
-    url=stripe_config['YOUR_DOMAIN']+'/stripe/webhook',
+    url=env['YOUR_DOMAIN']+'/stripe/webhook',
     enabled_events=[
         "charge.failed",
         "charge.succeeded",
@@ -28,8 +28,8 @@ async def get_checkout(user_data: dict = Depends(get_current_user)):
     if query_result : raise HTTPException(status_code=400, detail='user already subscribed')
     
     checkout_session = stripe.checkout.Session.create(
-        success_url = stripe_config['YOUR_DOMAIN']+'/success.html',
-        cancel_url = stripe_config['YOUR_DOMAIN']+'/cancel.html',
+        success_url = env['YOUR_DOMAIN']+'/success.html',
+        cancel_url = env['YOUR_DOMAIN']+'/cancel.html',
         line_items=[
             {
                 "price": stripe_config['price_id'],
