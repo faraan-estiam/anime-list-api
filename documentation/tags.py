@@ -11,5 +11,9 @@ tags_metadata = [
     {
         'name': 'Watchlist',
         'description': 'Create and retreive personal watching lists for users'
+    },
+    {
+        'name': 'Stripe',
+        'description': 'Connect API to stripe and manage subscriptions'
     }
 ]
