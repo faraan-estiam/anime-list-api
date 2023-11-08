@@ -18,7 +18,7 @@ async def get_watchlist(user_data: dict = Depends(get_current_user)):
     if not stripe_data: raise HTTPException(status_code=401, detail='no active subscription')
     status = stripe.Subscription.retrieve(stripe_data['subscription_id'])['status']
     if status != 'active': raise HTTPException(status_code=401, detail='no active subscription')
-    query_result = db.child('users').child(user_data['uid']).child('watchlist').get().val()
+    query_result = db.child('users').child(user_data['uid']).child('watchlist').get(token=user_data['idToken']).val()
     if not query_result : return []
     return [watchlist for watchlist in query_result.values()]
 
@@ -29,12 +29,12 @@ async def add_watched_anime(anime: WatchedAnime, user_data: dict = Depends(get_c
         raise HTTPException(status_code=409, detail='anime already found in watchlist')
     
     await get_anime_by_id(anime.anime_uid) #checks if anime exists before adding it to watchlist
-    db.child('users').child(user_data['uid']).child('watchlist').child(anime.anime_uid).set(anime.model_dump())
+    db.child('users').child(user_data['uid']).child('watchlist').child(anime.anime_uid).set(anime.model_dump(),token=user_data['idToken'])
     return {'message':'anime added to watchlist'}
 
 @router.get('/{anime_uid}')
 async def get_watched_anime_by_anime_uid(anime_uid: str, user_data: dict = Depends(get_current_user)):
-    query_result = db.child('users').child(user_data['uid']).child('watchlist').child(anime_uid).get().val()
+    query_result = db.child('users').child(user_data['uid']).child('watchlist').child(anime_uid).get(token=user_data['idToken']).val()
     if not query_result : raise HTTPException(status_code=404, detail='anime not found in watchlist')
     return query_result
 
@@ -42,5 +42,5 @@ async def get_watched_anime_by_anime_uid(anime_uid: str, user_data: dict = Depen
 async def remove_entry(anime_uid: str, user_data: dict = Depends(get_current_user)):
     #check if anime exists before attempting to delete
     await get_watched_anime_by_anime_uid(anime_uid, user_data)
-    db.child('users').child(user_data['uid']).child('watchlist').child(anime_uid).remove()
+    db.child('users').child(user_data['uid']).child('watchlist').child(anime_uid).remove(token=user_data['idToken'])
     return {'message':'anime removed from watchlist'}
