@@ -7,6 +7,7 @@ class Anime(BaseModel):
     fr_title : str
     genres : List[str]
     episodes : int
+    seasons : int
     oavs: int
     #user_reviews : str | None = None
 
@@ -16,8 +17,19 @@ class AnimeNoID(BaseModel):
     fr_title : str
     genres : List[str]
     episodes : int
+    seasons : int
     oavs: int
 
+class WatchedAnime(BaseModel):
+    anime_uid: str
+    last_season: int
+    last_episode: int
+    last_oav: int
+    status: str
+
+class User(BaseModel):
+    email: str
+    password: str
 #TODO :
 #<> add User model
     #<> watchlist ?
