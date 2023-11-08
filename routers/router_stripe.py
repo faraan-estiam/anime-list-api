@@ -14,6 +14,13 @@ router = APIRouter(
 )
 
 stripe.api_key=stripe_config['secret_key']
+stripe.WebhookEndpoint.create(
+    url=stripe_config['YOUR_DOMAIN']+'/stripe/webhook',
+    enabled_events=[
+        "charge.failed",
+        "charge.succeeded",
+    ],
+)
 
 @router.get('/subscribe')
 async def get_checkout(user_data: dict = Depends(get_current_user)):
