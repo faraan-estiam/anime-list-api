@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Header, Request, HTTPException
-from dotenv import dotenv_values
+from dotenv import dotenv_values, 
 from fastapi.responses import RedirectResponse
 import stripe, json
 from database.firebase import db
@@ -13,7 +13,6 @@ router = APIRouter(
     tags=['Stripe']
 )
 
-YOUR_DOMAIN='http://localhost'
 stripe.api_key=stripe_config['secret_key']
 
 @router.get('/subscribe')
@@ -22,8 +21,8 @@ async def get_checkout(user_data: dict = Depends(get_current_user)):
     if query_result : raise HTTPException(status_code=400, detail='user already subscribed')
     
     checkout_session = stripe.checkout.Session.create(
-        success_url = YOUR_DOMAIN+'/success.html',
-        cancel_url = YOUR_DOMAIN+'/cancel.html',
+        success_url = stripe_config['YOUR_DOMAIN']+'/success.html',
+        cancel_url = stripe_config['YOUR_DOMAIN']+'/cancel.html',
         line_items=[
             {
                 "price": stripe_config['price_id'],
