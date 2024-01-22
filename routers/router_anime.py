@@ -1,8 +1,9 @@
 from typing import List, Optional #compatibility fix for render
 from uuid import uuid4
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from classes.models import Anime, AnimeNoID
 from database.firebase import db
+from routers.router_auth import get_current_user
 
 router = APIRouter(
     prefix='/animes',
@@ -19,10 +20,10 @@ async def get_animes():
 
 #add a new anime
 @router.post('', response_model=Anime, status_code=201)
-async def post_anime(body_anime: AnimeNoID):
+async def post_anime(body_anime: AnimeNoID, user_data: dict = Depends(get_current_user)):
     uid = str(uuid4())
     newAnime=Anime(uid=uid, **body_anime.model_dump())
-    db.child('animes').child(uid).set(data=newAnime.model_dump())
+    db.child('animes').child(uid).set(data=newAnime.model_dump(), token=user_data['idToken'])
     return newAnime
 
 #search an anime
@@ -67,14 +68,14 @@ async def get_anime_by_id(anime_uid:str):
 
 #update an anime
 @router.put('/{anime_uid}', response_model=Anime)
-async def put_anime(anime_uid:str, body_anime: AnimeNoID):
+async def put_anime(anime_uid:str, body_anime: AnimeNoID, user_data: dict = Depends(get_current_user)):
     await get_anime_by_id(anime_uid) #checks if anime exists before attempting update
     updated_anime = Anime(uid=anime_uid, **body_anime.model_dump())
-    return db.child('animes').child(anime_uid).update(updated_anime.model_dump())
+    return db.child('animes').child(anime_uid).update(updated_anime.model_dump(), token=user_data['idToken'])
 
 #remove an anime
 @router.delete('/{anime_uid}')
-async def delete_anime(anime_uid:str):
+async def delete_anime(anime_uid:str, user_data: dict = Depends(get_current_user)):
     await get_anime_by_id(anime_uid) #checks if anime exists before attempting delete
-    db.child('animes').child(anime_uid).remove()
+    db.child('animes').child(anime_uid).remove(token=user_data['idToken'])
     return {'message':'anime delted'}

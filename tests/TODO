@@ -1,0 +1,68 @@
+Get /animes
+200
+Post /animes
+	201 created
+	422 validation error
+Get /animes/search
+	200
+	422 validation error
+Get /animes/{anime_uid}
+	200
+	404 not found
+	422 validation error
+Put /animes/{anime_uid}
+	200
+	404 not found
+	422 validation error
+Delete /animes/{anime_uid}
+	200
+	404 not found
+	422 validation error
+Post /auth/signup
+	201 created
+	422 validation error
+	409 email alreadyexists
+Post /auth/login
+	200
+	422 validation error
+	401 invalid credentials
+Get /auth/me
+	200
+	401 not authenticated
+Get /watchlist
+	200
+	401 not authenticated
+401 no active subscription
+Post /watchlist
+	201
+	422 validatation error
+	401 not authenticated
+401 no active subscription
+Get / watchlist/{anime_uid}
+	200
+	422 validatation error
+404 anime not found
+	401 not authenticated
+401 no active subscription
+Patch  / watchlist/{anime_uid}
+	200
+	422 validatation error
+404 anime not found
+	401 not authenticated
+401 no active subscription
+Delete / watchlist/{anime_uid}
+	200
+	422 validatation error
+404 anime not found
+	401 not authenticated
+401 no active subscription
+Get /stripe/subscribe
+	200
+	400 already subscribed
+401 not authenticated
+Get /stripe/unsubscribe
+	200
+	401 no active subscription
+401 not authenticated
+
+
