@@ -11,13 +11,16 @@ router = APIRouter(
     tags=['Watchlist']
 )
 
-#get current user watchlist
-@router.get('', response_model=List[WatchedAnime])
-async def get_watchlist(user_data: dict = Depends(get_current_user)):
+async def check_stripe_subscription(user_data):
     stripe_data=db.child('users').child(user_data['uid']).child('stripe').get().val()
     if not stripe_data: raise HTTPException(status_code=401, detail='no active subscription')
     status = stripe.Subscription.retrieve(stripe_data['subscription_id'])['status']
     if status != 'active': raise HTTPException(status_code=401, detail='no active subscription')
+
+#get current user watchlist
+@router.get('', response_model=List[WatchedAnime])
+async def get_watchlist(user_data: dict = Depends(get_current_user)):
+    await check_stripe_subscription(user_data)
     query_result = db.child('users').child(user_data['uid']).child('watchlist').get(token=user_data['idToken']).val()
     if not query_result : return []
     return [watchlist for watchlist in query_result.values()]
@@ -34,6 +37,7 @@ async def add_watched_anime(anime: WatchedAnime, user_data: dict = Depends(get_c
 
 @router.get('/{anime_uid}')
 async def get_watched_anime_by_anime_uid(anime_uid: str, user_data: dict = Depends(get_current_user)):
+    await check_stripe_subscription(user_data)
     query_result = db.child('users').child(user_data['uid']).child('watchlist').child(anime_uid).get(token=user_data['idToken']).val()
     if not query_result : raise HTTPException(status_code=404, detail='anime not found in watchlist')
     return query_result
