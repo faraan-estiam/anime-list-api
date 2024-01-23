@@ -3,12 +3,6 @@ from main import api
 import pytest
 from classes.models import AnimeNoID
 
-# #get all animes
-# @router.get('', response_model=List[Anime])
-# async def get_animes():
-#     query_result = db.child('animes').get().val()
-#     if not query_result : return []
-#     return [anime for anime in query_result.values()]
 client = TestClient(api)
 
 def test_get_all_anime():
