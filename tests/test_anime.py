@@ -5,6 +5,13 @@ from classes.models import AnimeNoID
 
 client = TestClient(api)
 
+def anime_uids():
+  response = client.get("/animes")
+  uid_list = [anime['uid'] for anime in response.json()]
+  if len(uid_list) > 5 :
+    uid_list = uid_list[0:5]
+  return uid_list
+
 def test_get_all_anime():
   response = client.get("/animes")
   assert response.status_code == 200
@@ -34,7 +41,7 @@ def test_unauthorized(route, method, body):
 ])
 def test_post_valid_anime(anime, auth_user):
   response = client.post("/animes", json= anime.model_dump(), headers={
-    "Authorization": f"Bearer {auth_user['access_token']}",
+    "Authorization": f"Bearer {auth_user['access_token']}"
   })
   assert response.status_code == 201
 
@@ -45,6 +52,11 @@ def test_post_valid_anime(anime, auth_user):
 ])
 def test_post_invalid_anime(something, auth_user):
   response = client.post("/animes", json= something, headers={
-    "Authorization": f"Bearer {auth_user['access_token']}",
+    "Authorization": f"Bearer {auth_user['access_token']}"
   })
   assert response.status_code == 422
+
+@pytest.mark.parametrize("id", anime_uids())
+def test_get_anime_by_id(id):
+  response = client.get(f'/animes/{id}')
+  assert response.status_code == 200
