@@ -39,44 +39,25 @@ def test_unauthorized(route, method, body):
 @pytest.mark.parametrize("anime",[
   AnimeNoID(title='shingeki no pytest', fr_title="l'attaque des pytest", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0)
 ])
-def test_post_valid_anime(anime, auth_user):
-  response = client.post("/animes", json= anime.model_dump(), headers={
-    "Authorization": f"Bearer {auth_user['access_token']}"
-  })
+def test_put_post_anime(anime, auth_user, create_anime):
+  response = client.post("/animes", json= anime.model_dump(), headers={"Authorization": f"Bearer {auth_user['access_token']}"})
   assert response.status_code == 201
   assert type(response.json()) == dict
+  response = client.put(f"/animes/{create_anime['uid']}", json=anime.model_dump(), headers={"Authorization": f"Bearer {auth_user['access_token']}"})
+  assert response.status_code == 202
+  assert type(response.json()) == dict
 
-@pytest.mark.parametrize("something",[
-  {"example": "this is obviously not working"},
-  {"title":"this will miss an fr title", "genres":['not','working','test'], "episodes":1, "seasons":3, "oavs":0},
-  {"title":"is oav string ?", "fr_title":"est-ce que l'oav est une chaine de caractères?", "genres":['not','working','test'], "episodes":1, "seasons":3, "oavs":"sdfdsfsdf"}
-])
-def test_post_invalid_anime(something, auth_user):
-  response = client.post("/animes", json= something, headers={
-    "Authorization": f"Bearer {auth_user['access_token']}"
-  })
-  assert response.status_code == 422
-
-@pytest.mark.parametrize("id", anime_uids())
-def test_get_anime_by_id(id):
-  response = client.get(f'/animes/{id}')
+def test_get_update_delete_anime(create_anime, auth_user):
+  anime = AnimeNoID(title='edited no pytest', fr_title="le pytest modifié", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0).model_dump()
+  response = client.get(f"/animes/{create_anime['uid']}")
   assert response.status_code == 200
-
-def test_update_anime(auth_user, create_anime):
-  updated_anime = AnimeNoID(title="updated_test_title", fr_title="titre_test_mis_a_jour", genres=['Testing'], episodes=99, seasons=1, oavs=0)
-  response = client.put(f"/anime/{create_anime['uid']}", headers={
-    "Authorization": f"Bearer {auth_user['access_token']}"
-  }, json= updated_anime.model_dump())
-  response.status_code == 202
-
-def test_delete_anime(auth_user, create_anime):
-  response = client.delete(f"/anime/{create_anime['uid']}", headers={
-    "Authorization": f"Bearer {auth_user['access_token']}"
-  })
-  response.status_code == 202
+  response = client.put(f"/animes/{create_anime['uid']}", headers={"Authorization": f"Bearer {auth_user['access_token']}"}, json=anime)
+  assert response.status_code == 202
+  response = client.delete(f"/animes/{create_anime['uid']}", headers={"Authorization": f"Bearer {auth_user['access_token']}"})
+  assert response.status_code == 202
 
 @pytest.mark.parametrize("id", ["not an id", "still not", "i think it's enough testing now"])
-def test_get_update_delete_anime_not_found(id, auth_user):
+def test_anime_not_found(id, auth_user):
   anime = AnimeNoID(title='shingeki no pytest', fr_title="l'attaque des pytest", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0).model_dump()
   response = client.get(f'/animes/{id}')
   assert response.status_code == 404
@@ -84,3 +65,23 @@ def test_get_update_delete_anime_not_found(id, auth_user):
   assert response.status_code == 404
   response = client.delete(f"/animes/{id}", headers={"Authorization": f"Bearer {auth_user['access_token']}"})
   assert response.status_code == 404
+
+@pytest.mark.parametrize("something",[
+  {"example": "this is obviously not working"},
+  {"title":"this will miss an fr title", "genres":['not','working','test'], "episodes":1, "seasons":3, "oavs":0},
+  {"title":"is oav string ?", "fr_title":"est-ce que l'oav est une chaine de caractères?", "genres":['not','working','test'], "episodes":1, "seasons":3, "oavs":"sdfdsfsdf"}
+])
+def invalid_anime(something, auth_user, create_anime):
+  response = client.post("/animes", json= something, headers={
+    "Authorization": f"Bearer {auth_user['access_token']}"
+  })
+  assert response.status_code == 422
+  response = client.put(f"/animes/{create_anime['uid']}", json= something, headers={
+    "Authorization": f"Bearer {auth_user['access_token']}"
+  })
+  assert response.status_code == 422
+
+def test_search_anime():
+  response = client.get("/animes/search", params={"title":""})
+  assert response.status_code == 200
+  assert type(response.json()) is list

@@ -67,14 +67,14 @@ async def get_anime_by_id(anime_uid:str):
     return query_result
 
 #update an anime
-@router.put('/{anime_uid}', response_model=Anime)
+@router.put('/{anime_uid}', response_model=Anime, status_code=202)
 async def put_anime(anime_uid:str, body_anime: AnimeNoID, user_data: dict = Depends(get_current_user)):
     await get_anime_by_id(anime_uid) #checks if anime exists before attempting update
     updated_anime = Anime(uid=anime_uid, **body_anime.model_dump())
     return db.child('animes').child(anime_uid).update(updated_anime.model_dump(), token=user_data['idToken'])
 
 #remove an anime
-@router.delete('/{anime_uid}')
+@router.delete('/{anime_uid}', status_code=202)
 async def delete_anime(anime_uid:str, user_data: dict = Depends(get_current_user)):
     await get_anime_by_id(anime_uid) #checks if anime exists before attempting delete
     db.child('animes').child(anime_uid).remove(token=user_data['idToken'])
