@@ -62,12 +62,6 @@ def test_get_anime_by_id(id):
   response = client.get(f'/animes/{id}')
   assert response.status_code == 200
 
-@pytest.mark.parametrize("id", ["not an id", "still not", "i think it's enough testing now"])
-def test_get_anime_not_found(id):
-  response = client.get(f'/animes/{id}')
-  assert response.status_code == 404
-
-
 def test_update_anime(auth_user, create_anime):
   updated_anime = AnimeNoID(title="updated_test_title", fr_title="titre_test_mis_a_jour", genres=['Testing'], episodes=99, seasons=1, oavs=0)
   response = client.put(f"/anime/{create_anime['uid']}", headers={
@@ -75,20 +69,18 @@ def test_update_anime(auth_user, create_anime):
   }, json= updated_anime.model_dump())
   response.status_code == 202
 
-def test_update_anime_not_found(auth_user, create_anime):
-  response = client.put(f"/anime/{create_anime['uid']}", headers={
-    "Authorization": f"Bearer {auth_user['access_token']}"
-  })
-  response.status_code == 404
-
 def test_delete_anime(auth_user, create_anime):
   response = client.delete(f"/anime/{create_anime['uid']}", headers={
     "Authorization": f"Bearer {auth_user['access_token']}"
   })
   response.status_code == 202
 
-def test_delete_anime_not_found(auth_user, create_anime):
-  response = client.delete(f"/anime/{create_anime['uid']}", headers={
-    "Authorization": f"Bearer {auth_user['access_token']}"
-  })
-  response.status_code == 404
+@pytest.mark.parametrize("id", ["not an id", "still not", "i think it's enough testing now"])
+def test_get_update_delete_anime_not_found(id, auth_user):
+  anime = AnimeNoID(title='shingeki no pytest', fr_title="l'attaque des pytest", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0).model_dump()
+  response = client.get(f'/animes/{id}')
+  assert response.status_code == 404
+  response = client.put(f"/animes/{id}", headers={"Authorization": f"Bearer {auth_user['access_token']}"}, json=anime)
+  assert response.status_code == 404
+  response = client.delete(f"/animes/{id}", headers={"Authorization": f"Bearer {auth_user['access_token']}"})
+  assert response.status_code == 404
