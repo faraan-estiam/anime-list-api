@@ -16,6 +16,25 @@ def test_get_all_anime():
   assert response.status_code == 200
   assert type(response.json()) is list
 
+@pytest.mark.parametrize("route,method,body", [
+  ("/animes","POST", AnimeNoID(title='shingeki no pytest', fr_title="l'attaque des pytest", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0).model_dump()),
+  ("/animes/animeUID","PUT", AnimeNoID(title='shingeki no pytest', fr_title="l'attaque des pytest", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0).model_dump()),
+  ("/animes/animeUID","DELETE", None)
+])
+def test_unauthorized(route, method, body):
+  if (method == "GET"):
+    response = client.get(route)
+  elif (method == "POST"):
+    response = client.post(route, json=body)
+  elif (method == "PUT"):
+    response = client.put(route, json=body)
+  elif (method == "PATCH"):
+    response = client.patch(route, json=body)
+  elif (method == "DELETE"):
+    response = client.delete(route)
+  
+  assert response.status_code == 401
+
 @pytest.mark.parametrize("anime",[
   AnimeNoID(title='shingeki no pytest', fr_title="l'attaque des pytest", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0)
 ])
