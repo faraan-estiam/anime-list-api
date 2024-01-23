@@ -1,23 +1,10 @@
-Get /animes
-200
-Post /animes
-	201 created
-	422 validation error
 Get /animes/search
 	200
 	422 validation error
-Get /animes/{anime_uid}
-	200
-	404 not found
-	422 validation error
+
 Put /animes/{anime_uid}
-	200
-	404 not found
 	422 validation error
-Delete /animes/{anime_uid}
-	200
-	404 not found
-	422 validation error
+
 Post /auth/signup
 	201 created
 	422 validation error

@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from main import api
 import pytest
-from classes.models import AnimeNoID
+from classes.models import AnimeNoID, Anime
 
 client = TestClient(api)
 
@@ -44,6 +44,7 @@ def test_post_valid_anime(anime, auth_user):
     "Authorization": f"Bearer {auth_user['access_token']}"
   })
   assert response.status_code == 201
+  assert type(response.json()) == dict
 
 @pytest.mark.parametrize("something",[
   {"example": "this is obviously not working"},
@@ -60,3 +61,34 @@ def test_post_invalid_anime(something, auth_user):
 def test_get_anime_by_id(id):
   response = client.get(f'/animes/{id}')
   assert response.status_code == 200
+
+@pytest.mark.parametrize("id", ["not an id", "still not", "i think it's enough testing now"])
+def test_get_anime_not_found(id):
+  response = client.get(f'/animes/{id}')
+  assert response.status_code == 404
+
+
+def test_update_anime(auth_user, create_anime):
+  updated_anime = AnimeNoID(title="updated_test_title", fr_title="titre_test_mis_a_jour", genres=['Testing'], episodes=99, seasons=1, oavs=0)
+  response = client.put(f"/anime/{create_anime['uid']}", headers={
+    "Authorization": f"Bearer {auth_user['access_token']}"
+  }, json= updated_anime.model_dump())
+  response.status_code == 202
+
+def test_update_anime_not_found(auth_user, create_anime):
+  response = client.put(f"/anime/{create_anime['uid']}", headers={
+    "Authorization": f"Bearer {auth_user['access_token']}"
+  })
+  response.status_code == 404
+
+def test_delete_anime(auth_user, create_anime):
+  response = client.delete(f"/anime/{create_anime['uid']}", headers={
+    "Authorization": f"Bearer {auth_user['access_token']}"
+  })
+  response.status_code == 202
+
+def test_delete_anime_not_found(auth_user, create_anime):
+  response = client.delete(f"/anime/{create_anime['uid']}", headers={
+    "Authorization": f"Bearer {auth_user['access_token']}"
+  })
+  response.status_code == 404

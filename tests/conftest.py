@@ -1,4 +1,5 @@
 from firebase_admin import auth
+from classes.models import AnimeNoID
 from main import api
 from fastapi.testclient import TestClient
 import pytest
@@ -15,7 +16,7 @@ def create_user():
     "password": "password"
   })
 
-@pytest.fixture
+@pytest.fixture()
 def auth_user(create_user):
   user_credentials = client.post("auth/login", data={
     "username": "test.useralreadyexists@gmail.com",
@@ -28,6 +29,14 @@ def remove_test_users():
   for user in users:
     if user.email.startswith("test."):
       auth.delete_user(user.uid)
+      
+@pytest.fixture()
+def create_anime(auth_user):
+  anime = AnimeNoID(title='shingeki no pytest', fr_title="l'attaque des pytest", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0)
+  response = client.post("/animes", json= anime.model_dump(), headers={
+    "Authorization": f"Bearer {auth_user['access_token']}"
+  })
+  return response.json()
 
 def remove_test_animes():
   client.post("/auth/signup", json= {
