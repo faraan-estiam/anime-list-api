@@ -1,25 +1,11 @@
-Get /watchlist
-	200
-	401 not authenticated
-	401 no active subscription
 Post /watchlist
 	201
 	422 validatation error
-	401 not authenticated
-	401 no active subscription
 Get / watchlist/{anime_uid}
 	200
-	404 anime not found
-	401 not authenticated
-	401 no active subscription
 Patch  / watchlist/{anime_uid}
 	200
 	422 validatation error
-	404 anime not found
-	401 not authenticated
-	401 no active subscription
 Delete / watchlist/{anime_uid}
 	200
-	404 anime not found
-	401 not authenticated
-	401 no active subscription
+

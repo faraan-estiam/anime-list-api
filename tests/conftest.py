@@ -46,11 +46,11 @@ def create_anime(auth_user):
 
 def remove_test_animes():
   client.post("/auth/signup", json= {
-    "email": "test.removetestanimetemporaryuser@gmail.com",
+    "email": "test.useralreadyexists@gmail.com",
     "password": "password"
   })
   user_credentials = client.post("auth/login", data={
-    "username": "test.removetestanimetemporaryuser@gmail.com",
+    "username": "test.useralreadyexists@gmail.com",
     "password": "password"
   })
   user_token = f"Bearer {user_credentials.json()['access_token']}"
