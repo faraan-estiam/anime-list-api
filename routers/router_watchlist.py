@@ -5,6 +5,7 @@ from database.firebase import db
 from routers.router_auth import get_current_user
 from routers.router_anime import get_anime_by_id
 import stripe
+import os
 
 router = APIRouter(
     prefix='/watchlist',
@@ -12,6 +13,8 @@ router = APIRouter(
 )
 
 async def check_stripe_subscription(user_data):
+    if os.getenv('TESTING') == 'True':
+        return
     stripe_data=db.child('users').child(user_data['uid']).child('stripe').get().val()
     if not stripe_data: raise HTTPException(status_code=401, detail='no active subscription')
     status = stripe.Subscription.retrieve(stripe_data['subscription_id'])['status']

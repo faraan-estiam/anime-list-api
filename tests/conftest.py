@@ -29,7 +29,13 @@ def remove_test_users():
   for user in users:
     if user.email.startswith("test."):
       auth.delete_user(user.uid)
-      
+
+@pytest.fixture()
+def subscribed_user(auth_user):
+  auth_user_uid = client.get("/auth/me", headers={'Authorization':f"Bearer {auth_user['access_token']}"}).json()['uid']
+  db.child('users').child(auth_user_uid).child('stripe').set({"subscription":"FAKE"},token=f"Bearer {auth_user['access_token']}")
+  return auth_user
+
 @pytest.fixture()
 def create_anime(auth_user):
   anime = AnimeNoID(title='shingeki no pytest', fr_title="l'attaque des pytest", genres=['test','tester','testing'], episodes=1, seasons=1, oavs=0)
